@@ -1,20 +1,18 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
 
 </script>
 
 <template>
   <div class="container text-center">
-    <header>
-        <nav>
-      
-        </nav>
+    <header class="center">
+      <h1>TIC TAC TOE</h1>
     </header>
-
+    
     <RouterView />
   </div>
 </template>
 
-<style >
+<style>
  @import './assets/css/main.css';
 </style>

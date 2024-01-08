@@ -1,7 +1,7 @@
 <template>
-    <div class="container">
-        <p>TEST</p>
-        <button class="btn btn-danger">XDDD</button>
+    <div>
+        
+        <router-link to="/game">PLAY!</router-link>
     </div>
   </template>
   
