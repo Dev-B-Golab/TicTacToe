@@ -4,6 +4,9 @@ import MainContent from '../components/MainContent.vue'
 
 <template>
   <main>
-    <MainContent />
+    <div>
+      <h1>Please write your's nick :D</h1>
+      <MainContent />
+    </div>
   </main>
 </template>

@@ -1,7 +1,7 @@
 <template>
-  <div class="container text-center">
+  <div>
     <h2 v-if="winner">Winner: {{ winner }} </h2>
-    <h2 v-else>Players Move {{ player }}</h2>
+    <h2 v-else>Players Move: {{ player }}</h2>
     <button @click="reset" class="btn primaryColor">Reset</button>
     <div class="boardGame">
       <table class="table">
@@ -16,6 +16,8 @@
 <script>
 import { ref } from 'vue';
 import { computed } from "vue";
+import { useRoute } from 'vue-router'
+
 const calcWinner = squares => {
   const lines = [
     [0,1,2],
@@ -37,6 +39,8 @@ const calcWinner = squares => {
 }
 export default {
   setup() {
+    const route = useRoute()
+    const nickname = ref(route.params.nickname)
 
     const player = ref("X")
     const squares = ref([
@@ -48,7 +52,11 @@ export default {
 
     const move = (x, y) => {
       if(winner.value || squares.value[x][y]) return
+        console.log(nickname.value)
       squares.value[x][y] = player.value
+      if(player == nickname){
+        player.value == "X"
+      }
       player.value = player.value === 'O' ? 'X' : 'O'
     }
 
