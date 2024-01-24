@@ -4,15 +4,13 @@ import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <div class="container text-center">
-    <header class="center">
-      <h1>TIC TAC TOE</h1>
-    </header>
-    
+  <div class="container">
     <RouterView />
   </div>
+  
 </template>
 
 <style>
  @import './assets/css/main.css';
+ 
 </style>
