@@ -16,7 +16,15 @@
     background-color:var(--primary-color);
     color: var(--text-color);
 }
-button .primaryColor:hover{
+button.primaryColor:hover{
     background-color:var(--secondary-color);
     color: var(--text-color);
+}
+.playerColor{
+    color:var(--text-color);
+    text-shadow: 0 0 20px var(--player-color);
+}
+.computerColor{
+    color:var(--text-color);
+    text-shadow: 0 0 20px var(--computer-color);
 }

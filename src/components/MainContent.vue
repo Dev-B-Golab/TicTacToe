@@ -8,16 +8,18 @@
 <script>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
 export default {
   setup() {
     const nickname = ref('')
     const router = useRouter()
+    const store = useStore()
 
     const goToGame = () => {
+      store.commit('setNickname', nickname.value)
       router.push({
         name: 'Game',
-        params: { nickname: nickname.value }
       })
     }
 

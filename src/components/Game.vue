@@ -2,11 +2,15 @@
   <div>
     <h2 v-if="winner">Winner: {{ winner }} </h2>
     <h2 v-else>Players Move: {{ player }}</h2>
+    <h2> Nick: {{ nickname }}</h2>
     <button @click="reset" class="btn primaryColor">Reset</button>
     <div class="boardGame">
       <table class="table">
         <tr v-for="(_ , x) in 3" :key="x" class="rows">
-          <td v-for="(_ , y) in 3" :key="y" class="col-3 board" @click="move(x,y)">{{ squares[x][y] }}</td>
+          <td v-for="(_ , y) in 3" :key="y" class="col-3 board" 
+            :class="[squares[x][y] == 'O' ? 'computerColor': 'playerColor']" @click="move(x,y)">
+            {{ squares[x][y] }}
+          </td>
         </tr>
       </table>
     </div>
@@ -40,8 +44,8 @@ const calcWinner = squares => {
 export default {
   setup() {
     const route = useRoute()
-    const nickname = ref(route.params.nickname)
-
+    const nickname = ref('')
+    // console.log(this);
     const player = ref("X")
     const squares = ref([
       ['','',''],
@@ -52,11 +56,7 @@ export default {
 
     const move = (x, y) => {
       if(winner.value || squares.value[x][y]) return
-        console.log(nickname.value)
       squares.value[x][y] = player.value
-      if(player == nickname){
-        player.value == "X"
-      }
       player.value = player.value === 'O' ? 'X' : 'O'
     }
 
@@ -68,7 +68,7 @@ export default {
         ['','','']
       ]
     }
-    return {winner, player, squares, move, reset };
+    return {winner, player, squares, move, reset, nickname};
 
   },
 };
