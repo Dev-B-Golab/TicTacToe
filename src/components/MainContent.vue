@@ -1,7 +1,15 @@
 <template>
-  <div class="">
-    <input type="text" placeholder="Nickname" v-model="nickname">
-    <button class="btn primaryColor" @click="goToGame">PLAY!</button>
+  <div class="mainLayout">
+    <div class="row">
+      <div class="col-12">
+        <input type="text" placeholder="Nickname" v-model="nickname">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <button class="btn primaryColor mt-4" @click="goToGame">PLAY!</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -32,5 +40,10 @@ export default {
 </script>
 
 <style scoped>
-
+input{
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border-radius: 10px;
+  text-align: center;
+}
 </style>

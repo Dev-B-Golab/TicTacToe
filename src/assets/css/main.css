@@ -6,6 +6,23 @@
     --text-color: #ffffff;
     
 }
+input::-webkit-input-placeholder {/* Chrome/Opera/Safari/Edge */
+	color: var(--text-color);
+    text-align: center;
+    opacity: 50%;
+}
+
+input::-ms-input-placeholder { /* Microsoft Edge */
+    color: var(--text-color);
+    text-align: center;
+    opacity: 50%;
+}
+
+input:-ms-input-placeholder {/* IE 10+ */
+	color: var(--text-color);
+    text-align: center;
+    opacity: 50%;
+}
 *{
     margin-top: 50px;
     background-color: black;
