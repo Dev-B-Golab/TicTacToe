@@ -14,26 +14,21 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
+import { mapMutations } from 'vuex'
 
 export default {
-  setup() {
-    const nickname = ref('')
-    const router = useRouter()
-    const store = useStore()
-
-    const goToGame = () => {
-      store.commit('setNickname', nickname.value)
-      router.push({
+  data() {
+    return {
+      nickname: ''
+    }
+  },
+  methods: {
+    ...mapMutations(['setNickname']),
+    goToGame() {
+      this.setNickname(this.nickname)
+      this.$router.push({
         name: 'Game',
       })
-    }
-
-    return {
-      nickname,
-      goToGame
     }
   }
 }
