@@ -1,7 +1,8 @@
 <template>
   <div>
     <h2 v-if="winner">Winner: {{ winnerName }} </h2>
-    <h2 v-else>Players Move: {{ playerName }}</h2>
+    <h2 v-if="draw==true">Draw! Play again</h2>
+    <h2 v-if="!winner">Players Move: {{ playerName }}</h2>
     <button @click="reset" class="btn primaryColor">Reset</button>
     <div class="boardGame">
       <table class="table">
@@ -48,10 +49,22 @@ export default {
       player: 'X',
       playerName: '',
       winnerName: '',
+      btnDisabled: true,
+      draw: false,
       squares: [
         ['','',''],
         ['','',''],
         ['','','']
+      ],
+      lines: [
+        [0,1,2],
+        [3,4,5],
+        [6,7,8],
+        [0,3,6],
+        [1,4,7],
+        [2,5,8],
+        [0,4,8],
+        [2,4,6]
       ]
     }
   },
@@ -62,15 +75,48 @@ export default {
     ...mapState(['nickname']),
     winner() {
       return calcWinner(this.squares.flat())
-    }
+    },
   },
   methods: {
     move(x, y) {
-      if(this.winner || this.squares[x][y]) return
-        this.squares[x][y] = this.player
-        this.playerName = this.player === 'O' ? this.nickname : 'Computer'
-        this.player = this.player === 'O' ? 'X' : 'O'
-        this.winnerName = this.player === 'O' ? this.nickname : 'Computer'
+      if(this.winner || this.squares[x][y] || this.btnDisabled == false) return
+      this.disableButton(true)
+      this.squares[x][y] = this.player
+      this.player = 'O';
+      this.playerName = 'Computer';
+      if (!this.winner && this.player === 'O') {
+        setTimeout( () => {
+            return this.computerMove();
+        }, 500);
+
+      this.winnerName = this.player === 'O' ? this.nickname : 'Computer'
+      }
+    },
+    computerMove() {
+      let emptySquares = [];
+      this.squares.forEach((row, i) => {
+        row.forEach((square, j) => {
+          if (!square) {
+            emptySquares.push({i, j});
+          }
+        });
+      });
+      if (emptySquares.length) {
+        let randomMove = emptySquares[Math.floor(Math.random() * emptySquares.length)];
+        this.squares[randomMove.i][randomMove.j] = this.player;
+        this.winner
+        this.player = 'X';
+        this.playerName = this.nickname;
+        this.disableButton();
+      }
+    },
+    disableButton(){
+      return this.btnDisabled = !this.btnDisabled 
+    },
+    checkDraw(){
+      if (squares.every(square => square !== '')) {
+        return this.draw = true;
+      }
     },
     reset() {
       this.player = 'X'
@@ -84,6 +130,8 @@ export default {
         resetWinner.classList.remove('hithere');
       });
       this.playerName = this.nickname
+      this.btnDisabled = true
+      this.draw = false
     }
   }
 };
@@ -95,6 +143,7 @@ export default {
   }
   td:hover{
     background-color: #141414;
+    cursor:pointer;
   }
   .board{
     max-width: 250px;
@@ -110,7 +159,6 @@ export default {
     height:400px;
   }
   .hithere {
- 
   animation: hithere 1s ease infinite;
 }
 @keyframes hithere {
