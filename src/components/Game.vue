@@ -3,7 +3,7 @@
     <h2 v-if="winner">Winner: {{ winnerName }} </h2>
     <h2 v-if="draw==true">Draw! Play again</h2>
     <h2 v-if="!winner">Players Move: {{ playerName }}</h2>
-    <button @click="reset" class="btn primaryColor">Reset</button>
+    <button @click="reset" class="btn primaryColor btn-lg">Reset</button>
     <div class="boardGame">
       <table class="table">
         <tr v-for="(_ , x) in 3" :key="x" class="rows">
@@ -86,7 +86,7 @@ export default {
       this.playerName = 'Computer';
       if (!this.winner && this.player === 'O') {
         setTimeout( () => {
-            return this.computerMove();
+            return this.computerMove(); 
         }, 500);
 
       this.winnerName = this.player === 'O' ? this.nickname : 'Computer'
@@ -110,6 +110,47 @@ export default {
         this.disableButton();
       }
     },
+    // computerMove() {
+    //   let emptySquares = [];
+    //   this.squares.forEach((row, i) => {
+    //     row.forEach((square, j) => {
+    //       if (!square) {
+    //         emptySquares.push({i, j});
+    //       }
+    //     });
+    //   });
+
+    //   // Check if the computer can win in the next move
+    //   for (let k = 0; k < emptySquares.length; k++) {
+    //     let {i, j} = emptySquares[k];
+    //     this.squares[i][j] = this.player;
+    //     if (calcWinner(this.squares.flat())) {
+    //       return;
+    //     }
+    //     this.squares[i][j] = '';
+    //   }
+
+    //   // Check if the player can win in the next move and block it
+    //   for (let k = 0; k < emptySquares.length; k++) {
+    //     let {i, j} = emptySquares[k];
+    //     this.squares[i][j] = 'X';
+    //     if (calcWinner(this.squares.flat())) {
+    //       this.squares[i][j] = this.player;
+
+    //     }
+    //     this.squares[i][j] = '';
+    //   }
+
+    //   // If no one can win in the next move, then make a random move
+    //   if (emptySquares.length) {
+    //     let randomMove = emptySquares[Math.floor(Math.random() * emptySquares.length)];
+    //     this.squares[randomMove.i][randomMove.j] = this.player;
+    //   }
+    //   this.winner
+    //   this.player = 'X';
+    //   this.playerName = this.nickname;
+    //   this.disableButton();
+    // },
     disableButton(){
       return this.btnDisabled = !this.btnDisabled 
     },

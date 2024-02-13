@@ -45,3 +45,6 @@ button.primaryColor:hover{
     color:var(--text-color);
     text-shadow: 0 0 20px var(--computer-color);
 }
+.error{
+    color: var(--computer-color);
+}

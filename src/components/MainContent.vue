@@ -2,12 +2,13 @@
   <div class="mainLayout">
     <div class="row">
       <div class="col-12">
-        <input type="text" placeholder="Nickname" v-model="nickname">
+        <input type="text" class="col-sm-4 col-sm-offset-4" required maxlength="15" placeholder="Nickname" @keyup.enter="goToGame()" v-model="nickname">
+        <p id="errorText" class="error" style="display:none">You need to enter your nickname</p>
       </div>
     </div>
     <div class="row">
       <div class="col-12">
-        <button class="btn primaryColor mt-4" @click="goToGame">PLAY!</button>
+        <button class="btn primaryColor mt-4 btn-lg" @click="goToGame">PLAY!</button>
       </div>
     </div>
   </div>
@@ -25,10 +26,15 @@ export default {
   methods: {
     ...mapMutations(['setNickname']),
     goToGame() {
-      this.setNickname(this.nickname)
-      this.$router.push({
-        name: 'Game',
-      })
+      if(this.nickname != ""){
+        this.setNickname(this.nickname)
+        this.$router.push({
+          name: 'Game',
+        })
+      }
+      else{
+        document.getElementById('errorText').style.display = 'block';
+      }
     }
   }
 }
