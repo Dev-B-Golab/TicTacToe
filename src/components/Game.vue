@@ -6,8 +6,8 @@
     <button @click="reset" class="btn primaryColor btn-lg">Reset</button>
     <div class="boardGame">
       <table class="table">
-        <tr v-for="(_ , x) in 3" :key="x" class="rows">
-          <td v-for="(_ , y) in 3" :key="y" :id="'gameField'+ (x * 3 + y)" class="col-3 board" 
+        <tr v-for="(_ , x) in size" :key="x" class="rows">
+          <td v-for="(_ , y) in size" :key="y" :id="'gameField'+ (x * size + y)" class="col-3 board" 
             :class="[squares[x][y] == 'O' ? 'computerColor': 'playerColor']" @click="move(x,y)">
             {{ squares[x][y] }}
           </td>
@@ -36,7 +36,7 @@ const calcWinner = squares => {
     if(squares[a] && squares[a] === squares[b] && squares[a] === squares[c]){
       for(var j=0; j<lines[i].length;j++){
         var winnerFields = document.getElementById('gameField'+lines[i][j]);
-        winnerFields.classList.add('hithere');
+        winnerFields.classList.add('youWin');
       }
       return squares[a]
     }
@@ -50,6 +50,7 @@ export default {
       playerName: '',
       winnerName: '',
       btnDisabled: true,
+      size: 3,
       draw: false,
       squares: [
         ['','',''],
@@ -101,56 +102,39 @@ export default {
           }
         });
       });
+
+      // Check if the computer can win in the next move
+      for (let k = 0; k < emptySquares.length; k++) {
+        let {i, j} = emptySquares[k];
+        this.squares[i][j] = this.player;
+        if (calcWinner(this.squares.flat())) {
+          return;
+        }
+        this.squares[i][j] = '';
+      }
+
+      // Check if the player can win in the next move and block it
+      for (let k = 0; k < emptySquares.length; k++) {
+        let {i, j} = emptySquares[k];
+        this.squares[i][j] = 'O';
+        if (calcWinner(this.squares.flat())) {
+          this.squares[i][j] = this.player;
+
+        }
+        this.squares[i][j] = '';
+      }
+
+      // If no one can win in the next move, then make a random move
       if (emptySquares.length) {
         let randomMove = emptySquares[Math.floor(Math.random() * emptySquares.length)];
         this.squares[randomMove.i][randomMove.j] = this.player;
-        this.winner
-        this.player = 'X';
-        this.playerName = this.nickname;
-        this.disableButton();
       }
+      this.winner
+      this.player = 'X';
+      this.playerName = this.nickname;
+      this.disableButton();
     },
-    // computerMove() {
-    //   let emptySquares = [];
-    //   this.squares.forEach((row, i) => {
-    //     row.forEach((square, j) => {
-    //       if (!square) {
-    //         emptySquares.push({i, j});
-    //       }
-    //     });
-    //   });
 
-    //   // Check if the computer can win in the next move
-    //   for (let k = 0; k < emptySquares.length; k++) {
-    //     let {i, j} = emptySquares[k];
-    //     this.squares[i][j] = this.player;
-    //     if (calcWinner(this.squares.flat())) {
-    //       return;
-    //     }
-    //     this.squares[i][j] = '';
-    //   }
-
-    //   // Check if the player can win in the next move and block it
-    //   for (let k = 0; k < emptySquares.length; k++) {
-    //     let {i, j} = emptySquares[k];
-    //     this.squares[i][j] = 'X';
-    //     if (calcWinner(this.squares.flat())) {
-    //       this.squares[i][j] = this.player;
-
-    //     }
-    //     this.squares[i][j] = '';
-    //   }
-
-    //   // If no one can win in the next move, then make a random move
-    //   if (emptySquares.length) {
-    //     let randomMove = emptySquares[Math.floor(Math.random() * emptySquares.length)];
-    //     this.squares[randomMove.i][randomMove.j] = this.player;
-    //   }
-    //   this.winner
-    //   this.player = 'X';
-    //   this.playerName = this.nickname;
-    //   this.disableButton();
-    // },
     disableButton(){
       return this.btnDisabled = !this.btnDisabled 
     },
@@ -168,7 +152,7 @@ export default {
       ]
       var winnerFieldsReset = document.querySelectorAll('.board');
       winnerFieldsReset.forEach(resetWinner => {
-        resetWinner.classList.remove('hithere');
+        resetWinner.classList.remove('youWin');
       });
       this.playerName = this.nickname
       this.btnDisabled = true
@@ -199,10 +183,10 @@ export default {
   .boardGame{
     height:400px;
   }
-  .hithere {
-  animation: hithere 1s ease infinite;
+  .youWin {
+  animation: youWin 1s ease infinite;
 }
-@keyframes hithere {
+@keyframes youWin {
   30% { transform: scale(1.2); }
   40%, 60% { transform: rotate(-20deg) scale(1.2); }
   50% { transform: rotate(20deg) scale(1.2); }
