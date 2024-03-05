@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h2 v-if="winner">Winner: {{ winnerName }} </h2>
+    <h2 v-if="winner && draw==false">Winner: {{ winnerName }} </h2>
     <h2 v-if="draw==true">Draw! Play again</h2>
-    <h2 v-if="!winner">Players Move: {{ playerName }}</h2>
+    <h2 v-if="!winner && draw==false">Players Move: {{ playerName }}</h2>
     <button @click="reset" class="btn primaryColor btn-lg">Reset</button>
     <div class="boardGame">
       <table class="table">
@@ -51,6 +51,7 @@ export default {
       winnerName: '',
       btnDisabled: true,
       size: 3,
+      moveCount: 0,
       draw: false,
       squares: [
         ['','',''],
@@ -81,11 +82,13 @@ export default {
   methods: {
     move(x, y) {
       if(this.winner || this.squares[x][y] || this.btnDisabled == false) return
-      this.disableButton(true)
+      this.disableButton()
       this.squares[x][y] = this.player
       this.player = 'O';
       this.playerName = 'Computer';
-      if (!this.winner && this.player === 'O') {
+      this.moveCount++
+      this.checkDraw()
+      if (!this.winner && this.player === 'O' && this.moveCount < 9) {
         setTimeout( () => {
             return this.computerMove(); 
         }, 500);
@@ -103,7 +106,6 @@ export default {
         });
       });
 
-      // Check if the computer can win in the next move
       for (let k = 0; k < emptySquares.length; k++) {
         let {i, j} = emptySquares[k];
         this.squares[i][j] = this.player;
@@ -113,7 +115,6 @@ export default {
         this.squares[i][j] = '';
       }
 
-      // Check if the player can win in the next move and block it
       for (let k = 0; k < emptySquares.length; k++) {
         let {i, j} = emptySquares[k];
         this.squares[i][j] = 'O';
@@ -124,7 +125,6 @@ export default {
         this.squares[i][j] = '';
       }
 
-      // If no one can win in the next move, then make a random move
       if (emptySquares.length) {
         let randomMove = emptySquares[Math.floor(Math.random() * emptySquares.length)];
         this.squares[randomMove.i][randomMove.j] = this.player;
@@ -132,15 +132,19 @@ export default {
       this.winner
       this.player = 'X';
       this.playerName = this.nickname;
+      this.moveCount++
       this.disableButton();
+      this.checkDraw()
     },
 
     disableButton(){
       return this.btnDisabled = !this.btnDisabled 
     },
     checkDraw(){
-      if (squares.every(square => square !== '')) {
-        return this.draw = true;
+      if (this.moveCount >= 9) {
+         this.draw = true;
+         this.disableButton();
+         return null
       }
     },
     reset() {
@@ -157,6 +161,7 @@ export default {
       this.playerName = this.nickname
       this.btnDisabled = true
       this.draw = false
+      this.moveCount = 0
     }
   }
 };
