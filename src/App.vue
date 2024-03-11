@@ -6,7 +6,7 @@ import { RouterView } from 'vue-router'
 <template>
   <div class="container text-center">
     <header>
-      <h1>TIC TAC TOE</h1>
+      <h1 style="font-size:40px">TIC TAC TOE</h1>
     </header>
     <RouterView />
   </div>

@@ -44,7 +44,7 @@ export default {
 <style scoped>
 input{
   background-color: var(--primary-color);
-  color: var(--text-color);
+  color: var(--input-text-color);
   border-radius: 10px;
   text-align: center;
 }

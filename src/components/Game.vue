@@ -71,7 +71,7 @@ export default {
     }
   },
   created() {
-    this.playerName = this.nickname;
+    this.playerName = this.nickname != '' ? this.nickname : 'Player';
   },
   computed: {
     ...mapState(['nickname']),
@@ -90,10 +90,9 @@ export default {
       this.checkDraw()
       if (!this.winner && this.player === 'O' && this.moveCount < 9) {
         setTimeout( () => {
+          this.winnerName = this.player === 'O' ? this.nickname : 'Computer'
             return this.computerMove(); 
         }, 500);
-
-      this.winnerName = this.player === 'O' ? this.nickname : 'Computer'
       }
     },
     computerMove() {
@@ -129,11 +128,12 @@ export default {
         let randomMove = emptySquares[Math.floor(Math.random() * emptySquares.length)];
         this.squares[randomMove.i][randomMove.j] = this.player;
       }
-      this.winner
+      
       this.player = 'X';
       this.playerName = this.nickname;
       this.moveCount++
       this.disableButton();
+      this.winner
       this.checkDraw()
     },
 
@@ -169,10 +169,10 @@ export default {
 
 <style scoped>
   table td{
-    border: solid 2px white;
+    border: solid 3px var(--primary-color);
   }
   td:hover{
-    background-color: #141414;
+    background-color: #2B3A48;
     cursor:pointer;
   }
   .board{
@@ -191,11 +191,8 @@ export default {
   .youWin {
   animation: youWin 1s ease infinite;
 }
+
 @keyframes youWin {
-  30% { transform: scale(1.2); }
-  40%, 60% { transform: rotate(-20deg) scale(1.2); }
-  50% { transform: rotate(20deg) scale(1.2); }
-  70% { transform: rotate(0deg) scale(1.2); }
-  100% { transform: scale(1); }
+  50% {  color: var(--winner-color); }
 }
 </style>
