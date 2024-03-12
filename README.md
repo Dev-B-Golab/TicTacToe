@@ -1,29 +1,22 @@
 # tictactoe
 
-This template should help get you started developing with Vue 3 in Vite.
+It's my first project in Vue.js
 
-## Recommended IDE Setup
+This is Tic Tac Toe game, where user play with computer.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+If you want to try it, follow the steps:
 
-## Customize configuration
+## Download the project
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
+### Use this commend to project setup
 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+#### Use this commend to run the project
 
 ```sh
 npm run dev
 ```
 
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
