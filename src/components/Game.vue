@@ -1,14 +1,14 @@
 <template>
   <div>
-    <h2 v-if="winner && draw==false">Winner: {{ winnerName }} </h2>
+    <h2 v-if="winner && draw==false">Winner: {{ winnerName }} </h2> 
     <h2 v-if="draw==true">Draw! Play again</h2>
     <h2 v-if="!winner && draw==false">Players Move: {{ playerName }}</h2>
     <button @click="reset" class="btn primaryColor btn-lg">Reset</button>
     <div class="boardGame">
       <table class="table">
-        <tr v-for="(_ , x) in size" :key="x" class="rows">
-          <td v-for="(_ , y) in size" :key="y" :id="'gameField'+ (x * size + y)" class="col-3 board" 
-            :class="[squares[x][y] == 'O' ? 'computerColor': 'playerColor']" @click="move(x,y)">
+        <tr v-for="(row, x) in squares" :key="x" class="rows">
+          <td v-for="(cell, y) in row" :key="y" class="col-3 board" @click="move(x,y)"
+          :class="{ computerColor: squares[x][y] == 'O', playerColor: squares[x][y] == 'X'}">
             {{ squares[x][y] }}
           </td>
         </tr>
@@ -20,37 +20,14 @@
 <script>
 import { mapState } from 'vuex'
 
-const calcWinner = squares => {
-  const lines = [
-    [0,1,2],
-    [3,4,5],
-    [6,7,8],
-    [0,3,6],
-    [1,4,7],
-    [2,5,8],
-    [0,4,8],
-    [2,4,6]
-  ]
-  for (let i = 0; i<lines.length; i++){
-    const [a,b,c] = lines[i]
-    if(squares[a] && squares[a] === squares[b] && squares[a] === squares[c]){
-      for(var j=0; j<lines[i].length;j++){
-        var winnerFields = document.getElementById('gameField'+lines[i][j]);
-        winnerFields.classList.add('youWin');
-      }
-      return squares[a]
-    }
-  }
-  return null
-}
 export default {
   data() {
     return {
-      player: 'X',
-      playerName: '',
+      playerMark: 'X',
+      playerName: 'Player',
       winnerName: '',
+      winner: false,
       btnDisabled: true,
-      size: 3,
       moveCount: 0,
       draw: false,
       squares: [
@@ -58,16 +35,9 @@ export default {
         ['','',''],
         ['','','']
       ],
-      lines: [
-        [0,1,2],
-        [3,4,5],
-        [6,7,8],
-        [0,3,6],
-        [1,4,7],
-        [2,5,8],
-        [0,4,8],
-        [2,4,6]
-      ]
+      playerMoves:[],
+      computerMoves:[],
+      checkTable: null,
     }
   },
   created() {
@@ -75,94 +45,115 @@ export default {
   },
   computed: {
     ...mapState(['nickname']),
-    winner() {
-      return calcWinner(this.squares.flat())
-    },
   },
   methods: {
-    move(x, y) {
-      if(this.winner || this.squares[x][y] || this.btnDisabled == false) return
+    move(x,y){
+      if(this.squares[x][y] || this.btnDisabled == false) return
+      this.squares[x][y] = this.playerMark
       this.disableButton()
-      this.squares[x][y] = this.player
-      this.player = 'O';
-      this.playerName = 'Computer';
-      this.moveCount++
-      this.checkDraw()
-      if (!this.winner && this.player === 'O' && this.moveCount < 9) {
-        setTimeout( () => {
-          this.winnerName = this.player === 'O' ? this.nickname : 'Computer'
-            return this.computerMove(); 
-        }, 500);
-      }
-    },
-    computerMove() {
-      let emptySquares = [];
-      this.squares.forEach((row, i) => {
-        row.forEach((square, j) => {
-          if (!square) {
-            emptySquares.push({i, j});
-          }
-        });
-      });
+      this.playerMark == 'X' ? this.playerMove(x,y) : this.computerMove(x,y);
+      this.playerMark = this.playerMark == 'X' ? 'O' : 'X'
+      this.moveCount++;
 
-      for (let k = 0; k < emptySquares.length; k++) {
-        let {i, j} = emptySquares[k];
-        this.squares[i][j] = this.player;
-        if (calcWinner(this.squares.flat())) {
+      
+      this.checkDraw();
+
+      //computer move unlock buttons
+      setTimeout( () => {
+            return this.disableButton(); 
+        }, 500);
+      
+    },
+
+    playerMove(x,y){
+      this.playerMoves.push({x,y})
+      this.checkWinner(this.playerMoves);
+      this.playerName = 'Computer'
+    },
+
+    computerMove(x,y){
+      this.computerMoves.push({x,y})
+      this.checkWinner(this.computerMoves);
+      this.playerName = this.nickname != '' ? this.nickname : 'Player'
+    },
+
+    checkWinner(markTable, boardSize=3) {
+      const winningConditions = [];
+
+      // Sprawdzenie pionowych linii
+      for (let i = 0; i < boardSize; i++) {
+        const condition = [];
+        for (let j = 0; j < boardSize; j++) {
+          condition.push([j, i]);
+        }
+        winningConditions.push(condition);
+      }
+
+      // Sprawdzenie poziomych linii
+      for (let i = 0; i < boardSize; i++) {
+        const condition = [];
+        for (let j = 0; j < boardSize; j++) {
+          condition.push([i, j]);
+        }
+        winningConditions.push(condition);
+      }
+
+      // Sprawdzenie przekątnych
+      const diagonal1 = [];
+      const diagonal2 = [];
+      for (let i = 0; i < boardSize; i++) {
+        diagonal1.push([i, i]);
+        diagonal2.push([i, boardSize - 1 - i]);
+      }
+      winningConditions.push(diagonal1, diagonal2);
+
+      for (const condition of winningConditions) {
+        let winnerFound = true;
+        let prevValue = null;
+        for (const [x, y] of condition) {
+          const cell = markTable.find(cell => cell.x === x && cell.y === y);
+          if (!cell || (prevValue && prevValue !== cell.value)) {
+            winnerFound = false;
+            break;
+          }
+          prevValue = cell.value;
+        }
+        if (winnerFound) {
+          this.disableButton();
+          this.winner = true;
+          this.winnerName = this.playerName;
           return;
         }
-        this.squares[i][j] = '';
       }
-
-      for (let k = 0; k < emptySquares.length; k++) {
-        let {i, j} = emptySquares[k];
-        this.squares[i][j] = 'O';
-        if (calcWinner(this.squares.flat())) {
-          this.squares[i][j] = this.player;
-
-        }
-        this.squares[i][j] = '';
-      }
-
-      if (emptySquares.length) {
-        let randomMove = emptySquares[Math.floor(Math.random() * emptySquares.length)];
-        this.squares[randomMove.i][randomMove.j] = this.player;
-      }
-      
-      this.player = 'X';
-      this.playerName = this.nickname;
-      this.moveCount++
-      this.disableButton();
-      this.winner
-      this.checkDraw()
     },
 
-    disableButton(){
-      return this.btnDisabled = !this.btnDisabled 
-    },
     checkDraw(){
-      if (this.moveCount >= 9) {
+      if (this.moveCount >= 9 && this.winner == false) {
          this.draw = true;
          this.disableButton();
          return null
       }
     },
-    reset() {
-      this.player = 'X'
+
+      disableButton(){
+      return this.btnDisabled = !this.btnDisabled 
+    },
+
+    reset(){
+      this.playerMark = 'X'
+      this.playerName = this.nickname != '' ? this.nickname : 'Player';
       this.squares = [
         ['','',''],
         ['','',''],
         ['','','']
       ]
-      var winnerFieldsReset = document.querySelectorAll('.board');
-      winnerFieldsReset.forEach(resetWinner => {
-        resetWinner.classList.remove('youWin');
-      });
-      this.playerName = this.nickname
       this.btnDisabled = true
       this.draw = false
+      this.playerMoves=[],
+      this.computerMoves=[],
       this.moveCount = 0
-    }
+      this.winner = false;
+    },
   }
 };
 </script>
